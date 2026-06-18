@@ -1,4 +1,5 @@
 import requests
+import json 
 
 appid = open("appid.txt").read().strip()
 url = "https://api.e-stat.go.jp/rest/3.0/app/json/getStatsData"
@@ -34,6 +35,7 @@ for i in data["GET_STATS_DATA"]["STATISTICAL_DATA"]["CLASS_INF"]["CLASS_OBJ"]:
 # print(area_map)
 
 result = []
+current_pref = ""
 for v in values:
     code = v["@area"]
     info = area_map[code]
@@ -42,10 +44,12 @@ for v in values:
         continue
     if level == "2":
         type = "都道府県"
+        current_pref = info["name"]
     else:
         type = "市区町村"
 
     item = {
+        "pref": current_pref,
         "city": info["name"],
         "aging_rate": float(v["$"]),
         "type": type,
@@ -65,3 +69,6 @@ for v in area_class:
         level_example[v["@level"]] = v["@name"]
 
 # print(level_example)
+
+with open("aging_data.json", "w", encoding="utf-8") as f:
+    json.dump(result, f, ensure_ascii=False)
