@@ -1,6 +1,7 @@
 import requests
 import json 
 
+# appidを取得し、e-statからAPIでデータ取得
 appid = open("appid.txt").read().strip()
 url = "https://api.e-stat.go.jp/rest/3.0/app/json/getStatsData"
 params = {
@@ -15,60 +16,41 @@ params = {
 response = requests.get(url, params= params)
 data = response.json()
 
+# 地域コードから地域名を取得するためここで変換表作成
 values = data["GET_STATS_DATA"]["STATISTICAL_DATA"]["DATA_INF"]["VALUE"]
-# print(len(values))
-# print(values[0])
-
-times = set(v["@time"] for v in values)
-# print(times)
-# print(data["GET_STATS_DATA"]["STATISTICAL_DATA"]["CLASS_INF"]["CLASS_OBJ"])
-
 area_map = {}
 for i in data["GET_STATS_DATA"]["STATISTICAL_DATA"]["CLASS_INF"]["CLASS_OBJ"]:
     if i["@id"] == "area":
-        area_class = i["CLASS"]
         for v in i["CLASS"]:
             area_map[v["@code"]] = {"name": v["@name"],"level": v["@level"]}
-            # area_map["name"] = v["@name"]
-            
-# print(len(area_map))
-# print(area_map)
 
+# e-statのデータをviews.pyで使いやすい辞書型のリストに整形する
 result = []
+# 市区町村のデータに県名がないので直前に出てきた県名を覚えるための変数
 current_pref = ""
+
 for v in values:
     code = v["@area"]
     info = area_map[code]
     level = info["level"]
+    # 小計と区は除外（小計は集計値で重複、区は市と二重カウントになるため）
     if level in ("3", "5"):
         continue
+    # level2が都道府県
     if level == "2":
-        type = "都道府県"
+        area_type = "都道府県"
         current_pref = info["name"]
     else:
-        type = "市区町村"
+        area_type = "市区町村"
 
     item = {
         "pref": current_pref,
         "city": info["name"],
         "aging_rate": float(v["$"]),
-        "type": type,
+        "area_type": area_type,
     }
     result.append(item)
 
-print(len(result))
-print([r for r in result if r["type"] == "都道府県"][:3])
-
-leves = set(v["@level"] for v in area_class)
-# print(leves)
-# print(result[:5])
-
-level_example = {}
-for v in area_class:
-    if v["@level"] not in level_example:
-        level_example[v["@level"]] = v["@name"]
-
-# print(level_example)
-
+# aging_data.jsonに情報書き出し
 with open("aging_data.json", "w", encoding="utf-8") as f:
-    json.dump(result, f, ensure_ascii=False)
+    json.dump(result, f, ensure_ascii=False, indent=2)
