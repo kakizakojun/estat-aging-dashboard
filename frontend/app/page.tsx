@@ -14,7 +14,7 @@ export default async function Home() {
     <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
       <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
           <h1>高齢化ダッシュボード（{count}件）</h1>
-          <ul>{data.map((item) => <li key={item.area_code}>{item.city},{item.aging_rate}</li>)}</ul>
+          <ul>{data.map((item) => <li key={item.area_code}>{item.pref} {item.city}：{item.aging_rate}%</li>)}</ul>
       </main>
     </div>
   );
