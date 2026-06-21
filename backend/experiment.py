@@ -44,6 +44,7 @@ for v in values:
         area_type = "市区町村"
 
     item = {
+        "area_code": code,
         "pref": current_pref,
         "city": info["name"],
         "aging_rate": float(v["$"]),
