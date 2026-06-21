@@ -1,6 +1,14 @@
+type AgingItem ={
+  area_code: string
+  pref: string
+  city: string
+  aging_rate: number
+  area_type: string
+}
+
 export default async function Home() {
   const res = await fetch("http://localhost:8000/api/aging/")
-  const data = await res.json()
+  const data: AgingItem[] = await res.json()
   const count = data.length
   return (
     <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
