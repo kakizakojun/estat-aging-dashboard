@@ -1,4 +1,5 @@
 import CityList from "./CityList"
+import Dashboard from "./Dashboard"
 import PrefMap from "./PrefMap"
 
 export type AgingItem ={
@@ -20,8 +21,7 @@ export default async function Home() {
     <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
       <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
           <h1>高齢化ダッシュボード（{count}件）</h1>
-          <PrefMap rates = {rates} />
-          <CityList data={data} />
+          <Dashboard data={data} rates={rates}/>
       </main>
     </div>
   );

@@ -1,9 +1,8 @@
 'use client'
-import { useState } from "react";
 import { AgingItem,CityRow } from "./page";
 
-export default function CityList(props:{data: AgingItem[]}) {
-    const [selectedPref, setSelectedPref] = useState<string>("東京都");
+export default function CityList(props:{data: AgingItem[],selectedPref: string, setSelectedPref: (pref: string) => void,}) {
+    const {selectedPref, setSelectedPref } = props
     const prefList = Array.from(new Set(props.data.map(item => item.pref)))
     return(
         <div>
