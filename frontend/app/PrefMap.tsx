@@ -2,8 +2,9 @@
 import { useRef, useEffect } from "react"
 import maplibregl from "maplibre-gl"
 import "maplibre-gl/dist/maplibre-gl.css"
+import { regionBounds } from "./regionBounds"
 
-export default function PrefMap(props: {rates: Record<string, number>, onSelectPref: (pref: string) => void, selectedPref: string},){
+export default function PrefMap(props: {rates: Record<string, number>, onSelectPref: (pref: string) => void, selectedPref: string, selectedRegion: string}){
     const mapContainer = useRef<HTMLDivElement>(null)
     const mapRef = useRef<maplibregl.Map | null>(null)
 
@@ -74,5 +75,14 @@ export default function PrefMap(props: {rates: Record<string, number>, onSelectP
         if (!map || !map.getLayer("pref-highlight")) return
         map.setFilter("pref-highlight", ["==", ["get","nam_ja"], props.selectedPref])
     }, [props.selectedPref])
+    useEffect(() => {
+        const map = mapRef.current
+        if (!map) return
+        if (props.selectedRegion !== ""){
+            map.fitBounds(regionBounds[props.selectedRegion], { padding: 40})
+        } else {
+            map.flyTo({ center:[137, 38], zoom: 4})
+        }
+    }, [props.selectedRegion])
     return <div ref={mapContainer} style={{ width: "100%", height: "500px" }} />
 }

@@ -11,7 +11,7 @@ export default function Dashboard(props: { data: AgingItem[], rates:Record<strin
     
     return(
         <>
-            <PrefMap rates={props.rates} onSelectPref = {setSelectedPref} selectedPref={selectedPref} />
+            <PrefMap rates={props.rates} onSelectPref = {setSelectedPref} selectedPref={selectedPref} selectedRegion={selectedRegion} />
             <CityList data={props.data} selectedPref={selectedPref} setSelectedPref={setSelectedPref} selectedRegion={selectedRegion} />
             <select onChange={(e) => {setSelectedRegion(e.target.value); setSelectedPref("") }} value={selectedRegion}>
                 <option value="">全て</option>
