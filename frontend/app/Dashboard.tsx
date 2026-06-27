@@ -8,6 +8,9 @@ import { regions } from "./regions"
 export default function Dashboard(props: { data: AgingItem[], rates:Record<string, number> }){
     const [selectedPref, setSelectedPref] = useState("")
     const [selectedRegion, setSelectedRegion] = useState("")
+    const regionRates = selectedRegion === "" ? [] :
+    regions[selectedRegion].map(pref => props.rates[pref])
+    const regionAvg = regionRates.reduce((sum, r) => sum + r ,0) / regionRates.length
     
     return(
         <>
@@ -17,7 +20,9 @@ export default function Dashboard(props: { data: AgingItem[], rates:Record<strin
                 <option value="">全て</option>
                 {Object.keys(regions).map(地方名 => <option key={地方名} value={地方名}>{地方名}</option>)}
             </select>
-            <p>選択中の地方：{selectedRegion}</p>  
+            <p>選択中の地方：{selectedRegion}</p>
+            {selectedRegion !== "" &&
+            <p>{selectedRegion}の平均：{regionAvg.toFixed(1)}%</p>}
         </>
     )
 }
