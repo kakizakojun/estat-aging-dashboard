@@ -10,7 +10,7 @@ export default function Dashboard(props: { data: AgingItem[], rates:Record<strin
     const [selectedRegion, setSelectedRegion] = useState("")
     const regionRates = selectedRegion === "" ? [] :
     regions[selectedRegion].map(pref => props.rates[pref])
-    const regionAvg = regionRates.reduce((sum, r) => sum + r ,0) / regionRates.length
+    const regionAvg  = regionRates.length === 0 ? 0 : regionRates.reduce((sum, r) => sum + r ,0) / regionRates.length
     
     return(
         <>
