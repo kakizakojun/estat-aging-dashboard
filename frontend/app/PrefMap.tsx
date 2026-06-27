@@ -3,8 +3,9 @@ import { useRef, useEffect } from "react"
 import maplibregl from "maplibre-gl"
 import "maplibre-gl/dist/maplibre-gl.css"
 import { regionBounds } from "./regionBounds"
+import { prefBounds } from "./prefBounds"
 
-export default function PrefMap(props: {rates: Record<string, number>, onSelectPref: (pref: string) => void, selectedPref: string, selectedRegion: string}){
+export default function PrefMap(props: {rates: Record<string, number>, onSelectPref: (pref: string) => void, selectedPref: string, selectedRegion: string, cityRates: Record<string, number>}){
     const mapContainer = useRef<HTMLDivElement>(null)
     const mapRef = useRef<maplibregl.Map | null>(null)
 
@@ -84,5 +85,40 @@ export default function PrefMap(props: {rates: Record<string, number>, onSelectP
             map.flyTo({ center:[137, 38], zoom: 4})
         }
     }, [props.selectedRegion])
+    useEffect(() => {
+        const map = mapRef.current
+        if (!map) return
+        if (props.selectedPref === "") {
+            if (map.getLayer("city-fill")) map.removeLayer("city-fill")
+            if (map.getSource("cities")) map.removeSource("cities")
+            map.flyTo({ center: [137, 38], zoom: 4 })
+            return
+        }
+
+        const load = async () => {
+            const res = await fetch(`/cities/${props.selectedPref}.json`)
+            const geojson = await res.json()
+            geojson.features.forEach((f: any) => {
+                f.properties.aging_rate = props.cityRates[f.properties.N03_007]
+            })
+            if (map.getLayer("city-fill")) map.removeLayer("city-fill")
+            if (map.getSource("cities")) map.removeSource("cities")
+            map.addSource("cities", {type: "geojson", data: geojson})
+            map.addLayer({id: "city-fill", type: "fill", source: "cities", paint: {
+                "fill-color": [
+                "step",
+                ["get", "aging_rate"],
+                "#ffffb2",
+                15, "#fecc5c",
+                18, "#fd8d3c",
+                21, "#f03b20",
+                24, "#bd0026",
+                ],
+                "fill-opacity": 0.75,
+            }})
+            map.fitBounds(prefBounds[props.selectedPref], { padding: 40})
+        }
+        load()
+    }, [props.selectedPref])
     return <div ref={mapContainer} style={{ width: "100%", height: "500px" }} />
 }
