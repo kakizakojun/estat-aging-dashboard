@@ -61,6 +61,21 @@ export default function PrefMap(props: {rates: Record<string, number>, onSelectP
             })
             map.on("mouseleave", "pref-fill", () => { 
                 map.getCanvasContainer().style.cursor = ""})
+            const popup = new maplibregl.Popup({closeButton: false, closeOnClick: false})
+            map.on("mousemove", "pref-fill", (e) => {
+                const f = e.features![0]
+                popup.setLngLat(e.lngLat).setHTML(`${f.properties.nam_ja}:${f.properties.aging_rate}%`).addTo(map)
+            })
+            map.on("mouseleave", "pref-fill", () => {
+                popup.remove()
+            })
+            map.on("mousemove", "city-fill", (e) => {
+                const f = e.features![0]
+                popup.setLngLat(e.lngLat).setHTML(`${f.properties.N03_004}:${f.properties.aging_rate}%`).addTo(map)
+            })
+            map.on("mouseleave", "city-fill", () => {
+                popup.remove()
+            })
             map.addLayer({
                 id: "pref-highlight",
                 type: "line",
@@ -85,6 +100,7 @@ export default function PrefMap(props: {rates: Record<string, number>, onSelectP
             map.flyTo({ center:[137, 38], zoom: 4})
         }
     }, [props.selectedRegion])
+
     useEffect(() => {
         const map = mapRef.current
         if (!map) return
@@ -120,5 +136,34 @@ export default function PrefMap(props: {rates: Record<string, number>, onSelectP
         }
         load()
     }, [props.selectedPref])
-    return <div ref={mapContainer} style={{ width: "100%", height: "500px" }} />
+
+    return (
+    <div style={{ position: "relative", width: "100%" }}>
+        <div ref={mapContainer} style={{ width: "100%", height: "500px"}} />
+        <div style={{
+            position: "absolute", "bottom": 10, right: 10,
+            background: "white", padding: 8, borderRadius: 4, fontSize: 12,
+        }}>
+            <div style={{display: "flex", alignItems: "center", gap: 4}}>
+                <div style={{width: 12, height: 12, background: "#ffffb2"}}/>
+                <span>~15%</span>
+            </div>
+            <div style={{display: "flex", alignItems: "center", gap: 4}}>
+                <div style={{width: 12, height: 12, background: "#fecc5c"}}/>
+                <span>15~18%</span>
+            </div>
+            <div style={{display: "flex", alignItems: "center", gap: 4}}>
+                <div style={{width: 12, height: 12, background: "#fd8d3c"}}/>
+                <span>18~21%</span>
+            </div>
+            <div style={{display: "flex", alignItems: "center", gap: 4}}>
+                <div style={{width: 12, height: 12, background: "#f03b20"}}/>
+                <span>21~24%</span>
+            </div>
+            <div style={{display: "flex", alignItems: "center", gap: 4}}>
+                <div style={{width: 12, height: 12, background: "#bd0026"}}/>
+                <span>24%~</span>
+            </div>
+        </div>
+    </div>)
 }
