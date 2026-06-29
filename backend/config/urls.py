@@ -22,4 +22,5 @@ from aging import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/aging/', views.aging_list),
+    path('api/cities/', views.cities_list),
 ]

@@ -71,7 +71,7 @@ export default function PrefMap(props: {rates: Record<string, number>, onSelectP
             })
             map.on("mousemove", "city-fill", (e) => {
                 const f = e.features![0]
-                popup.setLngLat(e.lngLat).setHTML(`${f.properties.N03_004}:${f.properties.aging_rate}%`).addTo(map)
+                popup.setLngLat(e.lngLat).setHTML(`${f.properties.name}:${f.properties.aging_rate}%`).addTo(map)
             })
             map.on("mouseleave", "city-fill", () => {
                 popup.remove()
@@ -112,27 +112,28 @@ export default function PrefMap(props: {rates: Record<string, number>, onSelectP
         }
 
         const load = async () => {
-            const res = await fetch(`/cities/${props.selectedPref}.json`)
-            const geojson = await res.json()
-            geojson.features.forEach((f: any) => {
-                f.properties.aging_rate = props.cityRates[f.properties.N03_007]
-            })
-            if (map.getLayer("city-fill")) map.removeLayer("city-fill")
-            if (map.getSource("cities")) map.removeSource("cities")
-            map.addSource("cities", {type: "geojson", data: geojson})
-            map.addLayer({id: "city-fill", type: "fill", source: "cities", paint: {
-                "fill-color": [
-                "step",
-                ["get", "aging_rate"],
-                "#ffffb2",
-                15, "#fecc5c",
-                18, "#fd8d3c",
-                21, "#f03b20",
-                24, "#bd0026",
-                ],
-                "fill-opacity": 0.75,
-            }})
-            map.fitBounds(prefBounds[props.selectedPref], { padding: 40})
+            try {
+                const res = await fetch(`http://localhost:8000/api/cities/?pref=${props.selectedPref}`)
+                const geojson = await res.json()
+                if (map.getLayer("city-fill")) map.removeLayer("city-fill")
+                if (map.getSource("cities")) map.removeSource("cities")
+                map.addSource("cities", {type: "geojson", data: geojson})
+                map.addLayer({id: "city-fill", type: "fill", source: "cities", paint: {
+                    "fill-color": [
+                    "step",
+                    ["get", "aging_rate"],
+                    "#ffffb2",
+                    15, "#fecc5c",
+                    18, "#fd8d3c",
+                    21, "#f03b20",
+                    24, "#bd0026",
+                    ],
+                    "fill-opacity": 0.75,
+                }})
+                map.fitBounds(prefBounds[props.selectedPref], { padding: 40})
+            } catch (e) {
+                console.error("市区町村データの取得に失敗：", e)
+            } 
         }
         load()
     }, [props.selectedPref])
