@@ -5,7 +5,7 @@ import { AgingItem } from "./page"
 import CityList from "./CityList"
 import { regions } from "./regions"
 
-export default function Dashboard(props: { data: AgingItem[], rates: Record<string, number>, cityRates: Record<string, number> }){
+export default function Dashboard(props: { data: AgingItem[], rates: Record<string, number> }){
     const [selectedPref, setSelectedPref] = useState("")
     const [selectedRegion, setSelectedRegion] = useState("")
     const regionRates = selectedRegion === "" ? [] :
@@ -14,7 +14,7 @@ export default function Dashboard(props: { data: AgingItem[], rates: Record<stri
     
     return(
         <>
-            <PrefMap rates={props.rates} onSelectPref = {setSelectedPref} selectedPref={selectedPref} selectedRegion={selectedRegion} cityRates={props.cityRates} />
+            <PrefMap rates={props.rates} onSelectPref = {setSelectedPref} selectedPref={selectedPref} selectedRegion={selectedRegion} />
             <CityList data={props.data} selectedPref={selectedPref} setSelectedPref={setSelectedPref} selectedRegion={selectedRegion} />
             <select onChange={(e) => {setSelectedRegion(e.target.value); setSelectedPref("") }} value={selectedRegion}>
                 <option value="">全て</option>

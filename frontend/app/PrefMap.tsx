@@ -5,7 +5,7 @@ import "maplibre-gl/dist/maplibre-gl.css"
 import { regionBounds } from "./regionBounds"
 import { prefBounds } from "./prefBounds"
 
-export default function PrefMap(props: {rates: Record<string, number>, onSelectPref: (pref: string) => void, selectedPref: string, selectedRegion: string, cityRates: Record<string, number>}){
+export default function PrefMap(props: {rates: Record<string, number>, onSelectPref: (pref: string) => void, selectedPref: string, selectedRegion: string }){
     const mapContainer = useRef<HTMLDivElement>(null)
     const mapRef = useRef<maplibregl.Map | null>(null)
 
