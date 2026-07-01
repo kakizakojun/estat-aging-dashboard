@@ -9,7 +9,7 @@ export type AgingItem ={
 }
 
 export default async function Home() {
-  const res = await fetch("http://localhost:8000/api/aging/")
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/aging/`)
   const data: AgingItem[] = await res.json()
   const count = data.length
   const rates = Object.fromEntries(

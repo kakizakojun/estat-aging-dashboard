@@ -113,7 +113,7 @@ export default function PrefMap(props: {rates: Record<string, number>, onSelectP
 
         const load = async () => {
             try {
-                const res = await fetch(`http://localhost:8000/api/cities/?pref=${props.selectedPref}`)
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/cities/?pref=${props.selectedPref}`)
                 const geojson = await res.json()
                 if (map.getLayer("city-fill")) map.removeLayer("city-fill")
                 if (map.getSource("cities")) map.removeSource("cities")
