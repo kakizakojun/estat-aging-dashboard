@@ -14,12 +14,16 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 
-GDAL_LIBRARY_PATH = "/opt/homebrew/lib/libgdal.dylib"
-GEOS_LIBRARY_PATH = "/opt/homebrew/lib/libgeos_c.dylib"
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
+
+
+if os.environ.get("GDAL_LIBRARY_PATH"):
+    GDAL_LIBRARY_PATH = os.environ.get("GDAL_LIBRARY_PATH")
+
+if os.environ.get("GEOS_LIBRARY_PATH"):
+    GEOS_LIBRARY_PATH = os.environ.get("GEOS_LIBRARY_PATH")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -28,9 +32,9 @@ load_dotenv(BASE_DIR / ".env")
 SECRET_KEY = os.environ["SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
 
 # Application definition
@@ -86,11 +90,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'estat_aging',
-        'USER': 'jun',
-        'PASSWORD': '',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': os.environ.get('DB_NAME', 'estat_aging'),
+        'USER': os.environ.get('DB_USER', 'jun'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
 
