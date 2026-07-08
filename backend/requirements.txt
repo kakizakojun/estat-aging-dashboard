@@ -10,4 +10,4 @@ python-dotenv==1.2.2
 requests==2.34.2
 sqlparse==0.5.5
 urllib3==2.7.0
-gunicorn==24.0.0
+gunicorn==26.0.0
