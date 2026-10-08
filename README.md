@@ -50,8 +50,8 @@ flowchart LR
 
 | エンドポイント | 内容 |
 | --- | --- |
-| `GET /api/aging/?pref=大分県` | 都道府県・市区町村の高齢化率（JSON）。`pref` で絞り込み可 |
-| `GET /api/cities/?pref=大分県` | 市区町村の境界＋高齢化率（GeoJSON） |
+| `GET /api/aging/?pref=鹿児島県` | 都道府県・市区町村の高齢化率（JSON）。`pref` で絞り込み可 |
+| `GET /api/cities/?pref=鹿児島県` | 市区町村の境界＋高齢化率（GeoJSON） |
 
 ## ローカルでの起動方法
 
