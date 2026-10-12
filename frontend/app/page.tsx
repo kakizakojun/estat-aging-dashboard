@@ -1,5 +1,7 @@
 import Dashboard from "./Dashboard"
 
+export const dynamic = 'force-dynamic'
+
 export type AgingItem ={
   area_code: string
   pref: string
