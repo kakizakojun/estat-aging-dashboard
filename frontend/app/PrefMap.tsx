@@ -38,10 +38,10 @@ export default function PrefMap(props: {rates: Record<string, number>, onSelectP
                     "step",
                     ["get", "aging_rate"],
                     "#ffffb2",
-                    15, "#fecc5c",
-                    18, "#fd8d3c",
-                    21, "#f03b20",
-                    24, "#bd0026",
+                    25, "#fecc5c",
+                    30, "#fd8d3c",
+                    35, "#f03b20",
+                    40, "#bd0026",
                     ],
                     "fill-opacity": 0.75,
                 },
@@ -123,10 +123,10 @@ export default function PrefMap(props: {rates: Record<string, number>, onSelectP
                     "step",
                     ["get", "aging_rate"],
                     "#ffffb2",
-                    15, "#fecc5c",
-                    18, "#fd8d3c",
-                    21, "#f03b20",
-                    24, "#bd0026",
+                    25, "#fecc5c",
+                    30, "#fd8d3c",
+                    35, "#f03b20",
+                    40, "#bd0026",
                     ],
                     "fill-opacity": 0.75,
                 }})
@@ -142,28 +142,28 @@ export default function PrefMap(props: {rates: Record<string, number>, onSelectP
     <div style={{ position: "relative", width: "100%" }}>
         <div ref={mapContainer} style={{ width: "100%", height: "500px"}} />
         <div style={{
-            position: "absolute", "bottom": 10, right: 10,
+            position: "absolute", "bottom": 40, right: 10,
             background: "white", padding: 8, borderRadius: 4, fontSize: 12,
         }}>
             <div style={{display: "flex", alignItems: "center", gap: 4}}>
                 <div style={{width: 12, height: 12, background: "#ffffb2"}}/>
-                <span>~15%</span>
+                <span>~25%</span>
             </div>
             <div style={{display: "flex", alignItems: "center", gap: 4}}>
                 <div style={{width: 12, height: 12, background: "#fecc5c"}}/>
-                <span>15~18%</span>
+                <span>25~30%</span>
             </div>
             <div style={{display: "flex", alignItems: "center", gap: 4}}>
                 <div style={{width: 12, height: 12, background: "#fd8d3c"}}/>
-                <span>18~21%</span>
+                <span>30~35%</span>
             </div>
             <div style={{display: "flex", alignItems: "center", gap: 4}}>
                 <div style={{width: 12, height: 12, background: "#f03b20"}}/>
-                <span>21~24%</span>
+                <span>35~40%</span>
             </div>
             <div style={{display: "flex", alignItems: "center", gap: 4}}>
                 <div style={{width: 12, height: 12, background: "#bd0026"}}/>
-                <span>24%~</span>
+                <span>40%~</span>
             </div>
         </div>
     </div>)
