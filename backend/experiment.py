@@ -1,56 +1,72 @@
 import requests
-import json 
+import json
 
 # appidを取得し、e-statからAPIでデータ取得
 appid = open("appid.txt").read().strip()
 url = "https://api.e-stat.go.jp/rest/3.0/app/json/getStatsData"
 params = {
     "appId": appid,
-    "statsDataId": "0000032966",
-    "cdCat01": "00700",
-    "cdCat02": "000",
-    "cdCat03": "000",
-    "cdCat04": "565",
-    "cdCat05": "002",
+    "statsDataId": "0000020101",
+    "cdCat01": "A1101,A1303",
+    "cdTime": "2020100000"
 }
 response = requests.get(url, params= params)
 data = response.json()
 
-# 地域コードから地域名を取得するためここで変換表作成
 values = data["GET_STATS_DATA"]["STATISTICAL_DATA"]["DATA_INF"]["VALUE"]
+population = {}
+
+for i in values:
+    if i['@area'] not in population:
+        population[i['@area']] = {}
+    population[i['@area']][i['@cat01']] = int(i['$'])
+
 area_map = {}
+# 地域コードから地域名を取得するためここで変換表作成
 for i in data["GET_STATS_DATA"]["STATISTICAL_DATA"]["CLASS_INF"]["CLASS_OBJ"]:
     if i["@id"] == "area":
         for v in i["CLASS"]:
             area_map[v["@code"]] = {"name": v["@name"],"level": v["@level"]}
 
-# e-statのデータをviews.pyで使いやすい辞書型のリストに整形する
 result = []
-# 市区町村のデータに県名がないので直前に出てきた県名を覚えるための変数
-current_pref = ""
+pref_total = {}
 
-for v in values:
-    code = v["@area"]
-    info = area_map[code]
-    level = info["level"]
-    # 小計と区は除外（小計は集計値で重複、区は市と二重カウントになるため）
-    if level in ("3", "5"):
+for code, count in population.items():
+    # 特別区部を入れてしまうと二重で計算してしまうため除外
+    if code == '13100':
         continue
-    # level2が都道府県
-    if level == "2":
-        area_type = "都道府県"
-        current_pref = info["name"]
-    else:
-        area_type = "市区町村"
-
+    # 政令指定都市の区は市と二重カウントになるため除外。東京23区は独立した自治体なので残す
+    if area_map[code]['level'] == '3' and not code.startswith('131'):
+        continue
+    # 総人口０を除外（例：原発事故の避難している双葉町）
+    if count['A1101'] == 0:
+        continue
+    
     item = {
         "area_code": code,
-        "pref": current_pref,
-        "city": info["name"],
-        "aging_rate": float(v["$"]),
-        "area_type": area_type,
+        "pref": area_map[code]["name"].split()[0],
+        "city": area_map[code]["name"].split()[1],
+        "aging_rate": round(count['A1303'] / count['A1101']  * 100 , 1),
+        "area_type": '市区町村',
     }
     result.append(item)
+    pref = item['pref']
+    if pref not in pref_total:
+        pref_total[pref] = {'code': code[:2] + '000', 'A1101': 0,'A1303': 0}
+    pref_total[pref]['A1101'] += count['A1101']
+    pref_total[pref]['A1303'] += count['A1303']
+
+for pref, total in pref_total.items():
+    item = {
+        "area_code": total['code'],
+        "pref": pref,
+        "city": pref,
+        "aging_rate": round(total['A1303'] / total['A1101']  * 100 , 1),
+        "area_type":"都道府県",
+    }
+    result.append(item)
+
+result.sort(key= lambda p: p['area_code'])
 
 # aging_data.jsonに情報書き出し
 with open("aging_data.json", "w", encoding="utf-8") as f:
